@@ -6,6 +6,8 @@ const QuizSchema = new Schema({
     },
     desc : {type:String, default: ''},
     questions: {type:Number, required:true},
+    examName: {type:String, default: null},
+    category: {type:String, required:true}
 }, { timestamps: true })
 
 module.exports = models.Quiz || model('Quiz', QuizSchema)
