@@ -5,7 +5,7 @@ const QuestionSchema = new Schema({
         type: String, required: true, minlength: 10,
         maxlength: 1000,
     },
-    quizid: { type: Schema.Types.ObjectId, required: true },
+    qslug: { type: Schema.Types.String, required: true },
     hint: { type: String, default: null },
     options:{
         a: {type: String,  required: true},
