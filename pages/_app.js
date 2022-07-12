@@ -56,7 +56,60 @@ function MyApp({ Component, pageProps }) {
     let copy = JSON.parse(localStorage.getItem('answers'))
     setAns(copy)
   }
-  return <><Navbar/><Component ans={ans} save={save} retrieve={retrieve} addAnswerCorrect={addAnswerCorrect} addAnswerWrong={addAnswerWrong} {...pageProps} className="min-h-screen" /></>
+  async function mfetch(endpoint, requesttype, body, datatype='json'){
+    if(datatype === 'json'){
+      let res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/${endpoint}`, 
+      {
+        method:requesttype.toUpperCase(),
+        headers:{
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      })
+      let json = await res.json()
+      return json
+    }
+    else{
+      let res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/${endpoint}`, 
+      {
+        method:requesttype.toUpperCase(),
+        headers:{
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      })
+      let json = await res.text()
+      return json
+    }
+  }
+  async function mfetchadmin(endpoint, requesttype, body, datatype='json'){
+    if(datatype === 'json'){
+      let res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/admin/${endpoint}`, 
+      {
+        method:requesttype.toUpperCase(),
+        headers:{
+          'Content-Type': 'application/json',
+          'Authorization': 'process.env.NEXT_PUBLIC_TOKEN_ADMIN'
+        },
+        body: JSON.stringify(body)
+      })
+      let json = await res.json()
+      return json
+    }
+    else{
+      let res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/${endpoint}`, 
+      {
+        method:requesttype.toUpperCase(),
+        headers:{
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      })
+      let json = await res.text()
+      return json
+    }
+  }
+  return <><Navbar/><Component ans={ans} mfetch={mfetch} mfetchadmin={mfetchadmin} retrieve={retrieve} addAnswerCorrect={addAnswerCorrect} addAnswerWrong={addAnswerWrong} {...pageProps} className="min-h-screen" /></>
 }
 
 export default MyApp

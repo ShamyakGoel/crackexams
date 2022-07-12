@@ -44,7 +44,7 @@ const MyQuiz = ({ question, last, totalques, addAnswerCorrect, addAnswerWrong, r
         })
         let json = await res.json()
         console.log(json)
-        return toast.success("YO yo")
+        router.push(`${process.env.NEXT_PUBLIC_HOST}/result/${json.quizdone._id}`)
       }
       else if(question.options[question.correctOption] === option_value){
         addAnswerCorrect(question._id, option_value)
