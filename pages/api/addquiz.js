@@ -5,13 +5,7 @@ async function handler(req, res) {
     if(req.method === "POST"){
         try{
         const {title, desc, questions, examName, category} = req.body
-        let quiz = new Quiz({
-            title,
-            desc,
-            questions,
-            examName,
-            category
-        })
+        let quiz = new Quiz(req.body)
         await quiz.save()
         return res.status(200).json({success:true, quiz})
     }
