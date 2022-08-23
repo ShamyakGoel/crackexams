@@ -13,6 +13,9 @@ async function handler(req, res) {
             let max = Number(quiz.maxmarks)
             let questions = await Question.find({ qslug: req.body.qslug })
             let perquesmarks = max/questions.length
+            if(!req.body.ans.correct){
+                req.body.ans.correct = {ques: [], soption: {}}
+            }
             questions.forEach((ques)=>{
                 if(req.body.ans.correct.ques.includes(ques._id.toString())){
                     marks += perquesmarks
@@ -26,15 +29,37 @@ async function handler(req, res) {
             })
             let d = new Date()
             let ex = d.getMilliseconds() + 60
-            console.log(max,perquesmarks)
+            let ttakenmill = parseInt(quiz.maxTime) * 60 * 1000
+            let takentime = ttakenmill - req.body.distance
+            var seconds = Math.floor((takentime/1000)%60);
+            var minutes = Math.floor((takentime/1000)/60);
+            if(quiz.isMock){
+                let quizdone = new QuizDone({
+                    correct,
+                    wrong,
+                    marks,
+                    maxmarks:max,
+                    perquesmarks,
+                    expireAt: new Date(ex),
+                    qname: quiz.title,
+                    timeTaken: `${minutes}:${seconds}`
+                })
+                await quizdone.save()
+                return res.status(200).json({success:true, quizdone})
+            }
+            else{
             let quizdone = new QuizDone({
                 correct,
                 wrong,
                 marks,
                 maxmarks:max,
                 perquesmarks,
-                expireAt: new Date(ex)
+                expireAt: new Date(ex),
+                qname: quiz.title
             })
+            await quizdone.save()
+            return res.status(200).json({success:true, quizdone})
+        }
             await quizdone.save()
         return res.status(200).json({success:true, quizdone})
     }

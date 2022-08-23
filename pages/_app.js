@@ -1,7 +1,9 @@
 import '../styles/globals.css'
 import {useState} from "react"
 import Navbar from '../components/Navbar'
+import {useRouter} from 'next/router'
 function MyApp({ Component, pageProps }) {
+  const router = useRouter()
   const [ans, setAns] = useState({})
   function addAnswerCorrect(qid, soption){  
     let copy = ans  
@@ -12,7 +14,6 @@ function MyApp({ Component, pageProps }) {
       if(copy.correct.ques.includes(qid)){
         return
       }
-      console.log(copy)
 
       copy.correct.ques.push(qid)
       copy.correct.soption[qid] = soption
@@ -20,9 +21,7 @@ function MyApp({ Component, pageProps }) {
     else{
       copy.correct = {ques: [], soption: {}}
       copy.correct.ques.push(qid)
-      console.log(copy)
       copy.correct.soption[qid] = soption
-      console.log(copy.correct)
     }
     setAns(copy)
     save()
@@ -38,13 +37,14 @@ function MyApp({ Component, pageProps }) {
       }
       copy.wrong.ques.push(qid)
       copy.wrong.soption[qid] = soption
-      console.log(copy)
     }
     else{
       copy.wrong = {ques: [], soption: {}}
       copy.wrong.ques.push(qid)
       copy.wrong.soption[qid] = soption
-      console.log(copy)
+    }
+    if(!copy.correct){
+      copy.correct = {ques: [], soption: {}}
     }
     setAns(copy)
     save()
@@ -83,6 +83,13 @@ function MyApp({ Component, pageProps }) {
     }
   }
   async function mfetchadmin(endpoint, requesttype, body, datatype='json'){
+    /**
+     * Function mfetchadmin is used for making requests to ADMIN endpoints
+     * @param {String} endpoint is endpoint for request
+     * @param {String} requesttype is the type of request such as:- 'get', 'post'
+     * @param {String} body is the data to be sent
+     * @param {String} datatype is the type of response to be returned
+     */
     if(datatype === 'json'){
       let res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/admin/${endpoint}`, 
       {
@@ -97,7 +104,7 @@ function MyApp({ Component, pageProps }) {
       return json
     }
     else{
-      let res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/${endpoint}`, 
+      let res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/admin/${endpoint}`, 
       {
         method:requesttype.toUpperCase(),
         headers:{
@@ -109,7 +116,11 @@ function MyApp({ Component, pageProps }) {
       return json
     }
   }
-  return <><Navbar/><Component ans={ans} mfetch={mfetch} mfetchadmin={mfetchadmin} retrieve={retrieve} addAnswerCorrect={addAnswerCorrect} addAnswerWrong={addAnswerWrong} {...pageProps} className="min-h-screen" /></>
+  if(router.pathname === '/admin/gpdf/[id]'){
+  return <><Component {...pageProps} className="min-h-screen" /></>
+  }else{
+    return <><Navbar/><Component ans={ans} mfetch={mfetch} mfetchadmin={mfetchadmin} retrieve={retrieve} addAnswerCorrect={addAnswerCorrect} addAnswerWrong={addAnswerWrong} {...pageProps} className="min-h-screen" /></>
+  }
 }
 
 export default MyApp

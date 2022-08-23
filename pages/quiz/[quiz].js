@@ -1,12 +1,54 @@
-import {useEffect} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import Question from "../../models/Question"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from "next/router"
-const MyQuiz = ({ question, last, totalques, addAnswerCorrect, addAnswerWrong, retrieve, ans }) => {
+import Quiz from '../../models/Quiz';
+const MyQuiz = ({ question, last, totalques, addAnswerCorrect, addAnswerWrong, retrieve, ans, quiz }) => {
+  const [distance, setDistance] = useState()
+  const [nw, setNw] = useState()
   useEffect(()=>{
     retrieve()
+    if(quiz.isMock){
+      initializeCountdown(document.getElementById('timeleft'))
+    }
   }, [])
+  function initializeCountdown(tleft){
+    tleft.classList.remove('hidden')
+    var now1 = new Date().getTime()
+    let countDownDate = new Date(now1 + ((parseInt(quiz.maxTime) * 60) * 1000)).getTime()
+    var x = setInterval(function() {
+
+      // Get today's date and time
+      var now = new Date().getTime();
+    
+      // Find the distance between now and the count down date
+      var distance = countDownDate - now;
+      setDistance(distance)
+      setNw(countDownDate)
+      // Time calculations for days, hours, minutes and seconds
+      var seconds = Math.floor((distance/1000)%60);
+      var minutes = Math.floor((distance/1000)/60);
+      // Display the result in the element with id="demo"
+      console.log(distance, now)
+      tleft.innerHTML = `Time Left: <span>${minutes}:${seconds}</span>`;
+    
+      // If the count down is finished, write some text
+      if (distance < 0) {
+        clearInterval(x);
+        tleft.innerHTML = "Time Left: <span>Time over</span>";
+        toast.error('Oh oH! Time is over! Please try again and try to solve the quiz in time', {
+          position: "top-left",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          });
+      }
+    }, 1000);
+  }
   async function handleSubmit() {
     let options = document.getElementsByName('options');
     let option_value;
@@ -35,15 +77,15 @@ const MyQuiz = ({ question, last, totalques, addAnswerCorrect, addAnswerWrong, r
         else if(question.options[question.correctOption] !== option_value){
           addAnswerWrong(question._id, option_value)
         }
+        clearInterval(x)
         let res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/checkQuiz`, {
           method: "POST",
           headers: {
             'Content-type': "application/json"
           },
-          body: JSON.stringify({ans, qslug: router.query.quiz})
+          body: JSON.stringify({ans, qslug: router.query.quiz, distance})
         })
         let json = await res.json()
-        console.log(json)
         router.push(`${process.env.NEXT_PUBLIC_HOST}/result/${json.quizdone._id}`)
       }
       else if(question.options[question.correctOption] === option_value){
@@ -69,6 +111,7 @@ const MyQuiz = ({ question, last, totalques, addAnswerCorrect, addAnswerWrong, r
         rtl={false}
         draggable
       />
+      <h2 className='font-bold text-xl m-5 hidden' id="timeleft">Time left: <span>01:20</span></h2>
       <div className="container md:m-20 m-10 md:mx-16 mx-0   bg-slate-200 rounded-xl px-3 py-3">
         <h1 className="px-5 text-2xl py-1 bg-green-600 rounded-xl text-white w-full">Question {router.query.question} of {totalques}</h1>
         <h2 className="px-5 text-xl my-2 bg-blue-600 rounded-xl text-white w-full">Ques {router.query.question}. {question.question}</h2>
@@ -106,20 +149,23 @@ const MyQuiz = ({ question, last, totalques, addAnswerCorrect, addAnswerWrong, r
           Submit your answer
         </button>
       </div>
+      {/* {quiz.isMock ? initializeCountdown() : ""} */}
     </div>
   )
 }
 
 export async function getServerSideProps(context) {
   let questions = await Question.find({ qslug: context.query.quiz })
+  let quiz = await Quiz.findOne({slug: context.query.quiz})
+  console.log(questions.length, Number(context.query.question))
   if (questions.length === Number(context.query.question)) {
     return {
-      props: { question: JSON.parse(JSON.stringify(Array.from(questions)[Number(context.query.question) - 1])), last: true, totalques: questions.length },
+      props: { question: JSON.parse(JSON.stringify(Array.from(questions)[Number(context.query.question) - 1])), last: true, totalques: questions.length, quiz: JSON.parse(JSON.stringify(quiz)) },
     }
   }
   else {
     return {
-      props: { question: JSON.parse(JSON.stringify(Array.from(questions)[Number(context.query.question) - 1])), last: false, totalques: questions.length },
+      props: { question: JSON.parse(JSON.stringify(Array.from(questions)[Number(context.query.question) - 1])), last: false, totalques: questions.length, quiz: JSON.parse(JSON.stringify(quiz)) },
     }
   }
 }

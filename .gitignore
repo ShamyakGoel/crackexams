@@ -38,3 +38,6 @@ yarn-error.log*
 
 #tmp
 .tmp
+
+#other files
+hacker_news.pdf

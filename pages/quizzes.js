@@ -1,3 +1,4 @@
+import { compare } from 'bcryptjs'
 import React from 'react'
 const Quizzes = ({quizzes}) => {
   return (
@@ -29,7 +30,7 @@ const Quizzes = ({quizzes}) => {
 }
 
 export async function getServerSideProps(context) {
-  let res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/allquiz`)
+  let res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/admin/allquiz`)
   let quizzes = await res.json()
   return {
     props: {quizzes}, // will be passed to the page component as props
