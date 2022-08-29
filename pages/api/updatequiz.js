@@ -14,7 +14,6 @@ async function handler(req, res) {
     else{
         return res.status(405).json({success:false, error:"Method not supported!"})
     }
-    res.status(200).json({ name: 'John Doe' })
 }
 
 export default connectDb(handler)

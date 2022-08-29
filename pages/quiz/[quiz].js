@@ -4,7 +4,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from "next/router"
 import Quiz from '../../models/Quiz';
-const MyQuiz = ({ question, last, totalques, addAnswerCorrect, addAnswerWrong, retrieve, ans, quiz }) => {
+const MyQuiz = ({ question, last, totalques, addAnswerCorrect, addAnswerWrong, retrieve, ans, quiz, user }) => {
   const [distance, setDistance] = useState()
   const [nw, setNw] = useState()
   useEffect(()=>{
@@ -30,7 +30,6 @@ const MyQuiz = ({ question, last, totalques, addAnswerCorrect, addAnswerWrong, r
       var seconds = Math.floor((distance/1000)%60);
       var minutes = Math.floor((distance/1000)/60);
       // Display the result in the element with id="demo"
-      console.log(distance, now)
       tleft.innerHTML = `Time Left: <span>${minutes}:${seconds}</span>`;
     
       // If the count down is finished, write some text
@@ -39,10 +38,10 @@ const MyQuiz = ({ question, last, totalques, addAnswerCorrect, addAnswerWrong, r
         tleft.innerHTML = "Time Left: <span>Time over</span>";
         toast.error('Oh oH! Time is over! Please try again and try to solve the quiz in time', {
           position: "top-left",
-          autoClose: 5000,
+          autoClose: 1000,
           hideProgressBar: false,
           closeOnClick: true,
-          pauseOnHover: true,
+          pauseOnHover: false,
           draggable: true,
           progress: undefined,
           });
@@ -77,13 +76,12 @@ const MyQuiz = ({ question, last, totalques, addAnswerCorrect, addAnswerWrong, r
         else if(question.options[question.correctOption] !== option_value){
           addAnswerWrong(question._id, option_value)
         }
-        clearInterval(x)
         let res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/checkQuiz`, {
           method: "POST",
           headers: {
             'Content-type': "application/json"
           },
-          body: JSON.stringify({ans, qslug: router.query.quiz, distance})
+          body: JSON.stringify({ans, qslug: router.query.quiz, distance, user})
         })
         let json = await res.json()
         router.push(`${process.env.NEXT_PUBLIC_HOST}/result/${json.quizdone._id}`)
@@ -157,7 +155,6 @@ const MyQuiz = ({ question, last, totalques, addAnswerCorrect, addAnswerWrong, r
 export async function getServerSideProps(context) {
   let questions = await Question.find({ qslug: context.query.quiz })
   let quiz = await Quiz.findOne({slug: context.query.quiz})
-  console.log(questions.length, Number(context.query.question))
   if (questions.length === Number(context.query.question)) {
     return {
       props: { question: JSON.parse(JSON.stringify(Array.from(questions)[Number(context.query.question) - 1])), last: true, totalques: questions.length, quiz: JSON.parse(JSON.stringify(quiz)) },

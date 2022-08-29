@@ -1,4 +1,3 @@
-import { compare } from 'bcryptjs'
 import React from 'react'
 const Quizzes = ({quizzes}) => {
   return (

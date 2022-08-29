@@ -24,10 +24,11 @@ const handler =  async (req, res)=>{
     }
     }
     
-    else{
-        
-        return res.status(405).json({error: "This method is not allowed"})
-    }
+    else if (req.method == "OPTIONS") {
+        res.setHeader("Allow", "POST");
+        res.setHeader("Access-Control-Allow-Headers", "content-type");
+        return res.status(200).json({});
+      }
 
 }
 

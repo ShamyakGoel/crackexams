@@ -1,9 +1,18 @@
 import '../styles/globals.css'
-import {useState} from "react"
+import {useState, useEffect} from "react"
 import Navbar from '../components/Navbar'
 import {useRouter} from 'next/router'
 function MyApp({ Component, pageProps }) {
+  const [user, setUser] = useState(null)
+ 
   const router = useRouter()
+  useEffect(() => {
+    if(localStorage.getItem('user')){
+      setUser(JSON.parse(localStorage.getItem('user')))
+    }else{
+      setUser(null)
+    }
+  }, [router.pathname])
   const [ans, setAns] = useState({})
   function addAnswerCorrect(qid, soption){  
     let copy = ans  
@@ -119,7 +128,7 @@ function MyApp({ Component, pageProps }) {
   if(router.pathname === '/admin/gpdf/[id]'){
   return <><Component {...pageProps} className="min-h-screen" /></>
   }else{
-    return <><Navbar/><Component ans={ans} mfetch={mfetch} mfetchadmin={mfetchadmin} retrieve={retrieve} addAnswerCorrect={addAnswerCorrect} addAnswerWrong={addAnswerWrong} {...pageProps} className="min-h-screen" /></>
+    return <><Navbar user={user}/><Component ans={ans} user={user} mfetch={mfetch} mfetchadmin={mfetchadmin} retrieve={retrieve} addAnswerCorrect={addAnswerCorrect} addAnswerWrong={addAnswerWrong} {...pageProps} className="min-h-screen" /></>
   }
 }
 

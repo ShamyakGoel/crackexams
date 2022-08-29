@@ -12,9 +12,8 @@ const Login = ({mfetchadmin}) => {
   const handleSubmit = async (e)=>{
     e.preventDefault()
     let json = await mfetchadmin('checkAdmin', 'post', creds)
-    console.log(json)
     if(json.success){
-      localStorage.setItem('loggedin', true)
+      localStorage.setItem('adminloggedin', true)
       router.push('/admin/')
     }
   }

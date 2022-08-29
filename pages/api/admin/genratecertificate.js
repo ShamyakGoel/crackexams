@@ -22,7 +22,6 @@ export default function handler(req, res) {
         })();
     }
     catch(e){
-        console.log('errorfhq-12=102-3ihjoi4jfoij490gjf4gj049gj4-30g=-3-34=3gi4j-34g4igo4i')
         console.log(e.stack)
     }
 }

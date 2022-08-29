@@ -3,6 +3,7 @@ import Quiz from "../../models/Quiz"
 import QuizDone from "../../models/QuizDone"
 import Question from "../../models/Question"
 import connectDb from "../../middleware/mongoose"
+import User from "../../models/User"
 async function handler(req, res) {
     if(req.method === "POST"){
         try{
@@ -45,6 +46,11 @@ async function handler(req, res) {
                     timeTaken: `${minutes}:${seconds}`
                 })
                 await quizdone.save()
+                if(req.body.user){
+                    let user = await User.findOne({email: req.body.user.email})
+                    user.quizdones.push(quizdone._id)
+                    user= await User.findOneAndUpdate({email: req.body.user.email}, {quizdones: user.quizdones})
+                }
                 return res.status(200).json({success:true, quizdone})
             }
             else{
@@ -58,10 +64,13 @@ async function handler(req, res) {
                 qname: quiz.title
             })
             await quizdone.save()
+            if(req.body.user){
+                let user = await User.findOne({email: req.body.user.email})
+                user.quizdones.push(quizdone._id)
+                user = await User.findOneAndUpdate({email: req.body.user.email}, {quizdones: user.quizdones})
+            }
             return res.status(200).json({success:true, quizdone})
         }
-            await quizdone.save()
-        return res.status(200).json({success:true, quizdone})
     }
     catch(e){   
         console.log(e)
