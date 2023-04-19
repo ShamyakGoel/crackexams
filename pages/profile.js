@@ -8,14 +8,17 @@ const Profile = () => {
   const [pass, setPass] = useState('')
   const router = useRouter()
   useEffect(() => {
+    if(!localStorage.getItem('user')){
+      router.push('/')
+    }
     const res = fetch(`${process.env.NEXT_PUBLIC_HOST}/api/getuser`, {
       method:"POST",
       headers:{
         'Content-type': 'application/json'
       },
-      body:JSON.stringify({token:localStorage.getItem("authtoken")})
+      body:JSON.stringify({token:JSON.parse(localStorage.getItem("user")).authtoken})
     })
-    if(!localStorage.getItem('authtoken')){
+    if(!localStorage.getItem('user')){
       router.push("/")
     }
     res.then(response =>{
@@ -45,7 +48,7 @@ const Profile = () => {
       headers:{
         'Content-Type': "application/json"
       },
-      body: JSON.stringify({creds, token: localStorage.getItem('authtoken')})
+      body: JSON.stringify({creds, token: localStorage.getItem('user')})
     })
     let a = await res.json()
     if(a.success){

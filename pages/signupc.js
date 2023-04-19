@@ -23,8 +23,7 @@ const Signupc = ({success,error,reqid,email}) => {
             router.push('/')
         }
     }, [router.isReady])
-    
-    
+        
     const submit = async (e)=>{
         e.preventDefault()
         if(creds.pass !== creds.rpass){
@@ -161,7 +160,6 @@ export async function getServerSideProps(context) {
       }
     let reqid = context.query.id;
     let request = await SignupReq.findOne({reqid})
-    console.log(request)
     if(!request){
         return {
             props: {error: "No such signup request!", success:false}, 

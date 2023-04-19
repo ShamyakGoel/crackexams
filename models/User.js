@@ -7,6 +7,7 @@ const UserSchema = new mongoose.Schema({
     address: {type:String, default: ''},
     phone: {type:String, default: ''},
     pincode: {type:String, default: ''},
-    superUser: {type:Boolean, default:false}
+    superUser: {type:Boolean, default:false},
+    quizdones: {type:Array, default:[]}
 }, {timestamps:true});
 export default mongoose.models.User || mongoose.model('User', UserSchema)

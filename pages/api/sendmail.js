@@ -5,6 +5,11 @@ import User from "../../models/User"
 import connectDb from "../../middleware/mongoose"
 // import Forgot from "../forgot"
 async function handler(req, res) {
+    if (req.method == "OPTIONS") {
+        res.setHeader("Allow", "POST");
+        res.setHeader("Access-Control-Allow-Headers", "content-type");
+        return res.status(202).json({});
+      }
     if(req.body.forgotPass){
         try{
     let user = await User.findOne({email:req.body.email})
@@ -20,13 +25,13 @@ async function handler(req, res) {
     let transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: process.env.EMAIL,
+            user: process.env.NEXT_PUBLIC_EMAIL,
             pass: process.env.PASS
         }
     });
 
     let mailOptions = {
-        from: process.env.EMAIL,
+        from: process.env.NEXT_PUBLIC_EMAIL,
         to: req.body.email,
         html: 
         `
@@ -71,13 +76,13 @@ async function handler(req, res) {
             let transporter = nodemailer.createTransport({
                 service: 'gmail',
                 auth: {
-                    user: process.env.EMAIL,
+                    user: process.env.NEXT_PUBLIC_EMAIL,
                     pass: process.env.PASS
                 }
             });
         
             let mailOptions = {
-                from: process.env.EMAIL,
+                from: process.env.NEXT_PUBLIC_EMAIL,
                 to: req.body.email,
                 html: 
                 `

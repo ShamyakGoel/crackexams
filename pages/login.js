@@ -11,7 +11,7 @@ const Login = () => {
     setCreds({...creds, [e.target.name]: e.target.value})
   }
   React.useEffect(() => {
-    if(localStorage.getItem('authtoken')){
+    if(localStorage.getItem('user')){
       router.replace(`${process.env.NEXT_PUBLIC_HOST}`)
     }
   }, [router.query])
@@ -37,7 +37,7 @@ const Login = () => {
         draggable: true,
         progress: undefined,
         });
-        localStorage.setItem('authtoken', json.authtoken)
+        localStorage.setItem('user', JSON.stringify({email: json.user.email, authtoken: json.authtoken}))
         setTimeout(() => {
           router.push(`${process.env.NEXT_PUBLIC_HOST}/profile`)
         }, 1500);

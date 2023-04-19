@@ -1,4 +1,5 @@
 import QuizDone from '../../models/QuizDone';
+import Quiz from '../../models/Quiz';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useState } from 'react';
@@ -7,9 +8,8 @@ function objToJson(obj) {
   return JSON.parse(JSON.stringify(obj))
 }
 
-const MyQuiz = ({ res }) => {
+const MyQuiz = ({ res , quiz}) => {
   const [name, setName] = useState("")
-  console.log(res)
   async function getCertificate(e){
     e.preventDefault()
     if(res.correct.ques.length === 0){
@@ -38,8 +38,8 @@ const MyQuiz = ({ res }) => {
 <a href="" className='hidden' id="hidden"></a>
         <h1 className='text-4xl text-center my-3 text-gray-800 font-bold'>Your Quiz Summary</h1>
         <div className='text-center'>
-        <a role="button" href={`${process.env.NEXT_PUBLIC_HOST}/api/admin/genratepdf?id=${router.query.id}`} class="bg-blue-600 hover:bg-grey text-white font-bold py-2 px-4 rounded inline-flex items-center">
-          <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" /></svg>
+        <a role="button" href={`${process.env.NEXT_PUBLIC_HOST}/api/admin/genratepdf?id=${router.query.id}`} className="bg-blue-600 hover:bg-grey text-white font-bold py-2 px-4 rounded inline-flex items-center">
+          <svg className="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" /></svg>
           <span>Download quiz summary as PDF</span>
         </a>
         <p className='font-bold text-xl text-center'>To get certificate enter your name</p>
@@ -59,7 +59,8 @@ const MyQuiz = ({ res }) => {
           <h2 className="text-4xl text-center my-3 text-green-800 font-bold">Wonderful!, you scored {res.marks} out of {res.maxmarks} Marks/Points</h2>
           <p className='font-bold text-xl text-center'>Congratulations for passing the examination!</p>
         </div> : ""}
-        <p className='font-bold text-xl text-center'>Time Taken : {res.timeTaken} Minutes</p>
+        {quiz.isMock ? 
+        <p className='font-bold text-xl text-center'>Time Taken : {res.timeTaken} Minutes</p> : ""}
         {res.correct.ques.length > 0 ? <div className="correct">
           <h3 className='text-2xl text-green-800 font-extrabold text-center'>Your Correct Answers</h3>
           {res.correct.ques.map((elem, i) => {
@@ -140,8 +141,9 @@ const MyQuiz = ({ res }) => {
 
 export async function getServerSideProps(context) {
   let quizdone = await QuizDone.findById(context.query.id)
+  let quiz = await Quiz.findOne({title : quizdone.qname})
   return {
-    props: { res: objToJson(quizdone) }
+    props: { res: objToJson(quizdone) , quiz: objToJson(quiz)}
   }
 }
 

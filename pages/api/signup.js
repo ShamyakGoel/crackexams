@@ -4,14 +4,20 @@ import connectDb from "../../middleware/mongoose"
 import CryptoJS  from "crypto-js";
 const handler =  async (req, res)=>{
     if(req.method == "POST"){
-        let user = await User.findOne({email:req.body.email})
-        if(user){
-            return res.status(406).json({success:false,error: "User already exists"})
+            let user = await User.findOne({email:req.body.email})
+            if(user){
+                return res.status(406).json({success:false,error: "User already exists"})
+            }
+            const {email} = req.body
+            try{
+            user = new User({email,password:CryptoJS.AES.encrypt(req.body.rpass, process.env.KEY).toString()})
+        }catch(e){
+            console.log(e)
+            res.status(500).json({error: "error"})
         }
-        const {email} = req.body
-        user = new User({email,password:CryptoJS.AES.encrypt(req.body.rpass, process.env.KEY).toString()})
-        await user.save()
-        res.status(200).json({success:true, user})
+            await user.save()
+            res.status(200).json({success:true, user})
+        
     }
     
     else{

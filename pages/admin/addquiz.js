@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import { ToastContainer, toast } from "react-toastify";
-import A from '../../components/A';
+// import A from '../../components/A';
 import "react-toastify/dist/ReactToastify.css";
-import Link from "next/link"
+// import Link from "next/link"
 import { useRouter } from "next/router"
 const Index = ({mfetchadmin}) => {
   const router = useRouter()
   useEffect(() => {
-    if (localStorage.getItem('loggedin') !== 'true') {
+    if (localStorage.getItem('adminloggedin') !== 'true') {
       router.push('/admin/login')
     }
   }, [])
