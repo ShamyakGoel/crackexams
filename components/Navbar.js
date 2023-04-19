@@ -15,13 +15,8 @@ const Navbar = ({user}) => {
   }
   return (
     <>
-<<<<<<< HEAD
-      <div>
-      {showProfile && <div className='z-20 absolute right-14 rounded-md px-5 w-32 bg-white dark:bg-gray-800 dark:text-white shadow-lg border py-4 top-12' onMouseOver={() => { setshowProfile(true) }} onMouseLeave={() => { setshowProfile(false) }}>
-=======
       <a>
       {showProfile && user !=null && <div className='z-20 absolute right-14 rounded-md px-5 w-32 bg-white dark:bg-gray-800 dark:text-white shadow-lg border py-4 top-12' onMouseOver={() => { setshowProfile(true) }} onMouseLeave={() => { setshowProfile(false) }}>
->>>>>>> 32131b71895663c1859e13987818d65cce7e7d69
           <ul>
             <Link href={'/quizdone'}><li className="py-1 hover:text-gray-700 cursor-pointer text-sm ">Quizzes done</li></Link>
             <li onClick={logout} className="py-1 hover:text-gray-700 cursor-pointer text-sm ">Logout</li>
@@ -75,17 +70,11 @@ const Navbar = ({user}) => {
         </div>
         <div className="absolute right-0 mx-5 top-4 flex cart space-x-6 items-center">
           <span onMouseOver={() => { setshowProfile(true) }}><MdAccountCircle className="text-xl md:text-2xl lg:text-3xl cursor-pointer mx-2" /></span>
-<<<<<<< HEAD
-          <Link href={'/login'}>
-            <button className="bg-blue-500 px-2 py-1 rounded-md mx-2 text-sm text-white">Login</button>
-          </Link> 
-=======
           {user == null ? <Link href={'/login'}><a>
             <button className="bg-blue-500 px-2 py-1 rounded-md mx-2 text-sm text-white">Login</button>
           </a></Link> : <div onClick={logout}><a>
             <button className="bg-blue-500 px-2 py-1 rounded-md mx-2 text-sm text-white">Logout</button>
           </a></div>}
->>>>>>> 32131b71895663c1859e13987818d65cce7e7d69
         </div>
       </div>
     </>
